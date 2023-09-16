@@ -16,6 +16,48 @@ TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
+def main():
+    try:
+        tut_path = find_file_path(TUTORIAL_LIST_FILENAME)
+        print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_path}!")
+        bot_name_path = find_file_path(ATTENDANCE_NAMES_FILE)
+        print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_name_path}!")
+    except FileNotFoundError as e:
+        print(e)
+        return
+
+    attendance = TakeAttendance(
+        output_path=tut_path,
+        input_path=bot_name_path,
+        tutorial_number=TUTORIAL_NUMBER,
+        overwrite_mode=OVERWRITE_MODE,
+    )
+
+    attendance.run()
+
+
+def find_file_path(file_str: str) -> str:
+    """
+    Find the file path of the first file in the script's directory that starts with file_str
+
+    Args:
+        file_str (str): string for the file to find
+
+    Returns:
+        str: absolute path to the file
+    """
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+
+    # Iterate over files in the script's directory
+    for filename in os.listdir(current_directory):
+        # Check if the filename starts with the constant string
+        if filename.startswith(file_str):
+            # Print the first matching filename and exit the loop
+            return os.path.join(current_directory, filename)
+
+    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_str)
+
+
 class StudentAttendance(NamedTuple):
     username: str
     sid: int
@@ -91,14 +133,10 @@ class TakeAttendance:
 
                 if key in tut_list_dict:
                     raise Exception("Duplicate username found")
-                
+
                 curr_score = worksheet.cell(row, score_col).value
 
-                if (
-                    self.overwrite_mode
-                    and curr_score is not None
-                    and curr_score > 0
-                ):
+                if self.overwrite_mode and curr_score is not None and curr_score > 0:
                     value = StudentAttendance(
                         username=key,
                         sid=worksheet.cell(row, sid_col).value,
@@ -202,48 +240,6 @@ class TakeAttendance:
         new_attendance = self._update_attendance(student_attendance, attendance_dict)
         num = self._write_tutorial_list(new_attendance)
         print(f"Successfully wrote {num} students to {self.output_path}!")
-
-
-def find_file_path(file_str: str) -> str:
-    """
-    Find the file path of the first file in the script's directory that starts with file_str
-
-    Args:
-        file_str (str): string for the file to find
-
-    Returns:
-        str: absolute path to the file
-    """
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-
-    # Iterate over files in the script's directory
-    for filename in os.listdir(current_directory):
-        # Check if the filename starts with the constant string
-        if filename.startswith(file_str):
-            # Print the first matching filename and exit the loop
-            return os.path.join(current_directory, filename)
-
-    raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_str)
-
-
-def main():
-    try:
-        tut_path = find_file_path(TUTORIAL_LIST_FILENAME)
-        print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_path}!")
-        bot_name_path = find_file_path(ATTENDANCE_NAMES_FILE)
-        print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_name_path}!")
-    except FileNotFoundError as e:
-        print(e)
-        return
-
-    attendance = TakeAttendance(
-        output_path=tut_path,
-        input_path=bot_name_path,
-        tutorial_number=TUTORIAL_NUMBER,
-        overwrite_mode=OVERWRITE_MODE,
-    )
-
-    attendance.run()
 
 
 if __name__ == "__main__":
