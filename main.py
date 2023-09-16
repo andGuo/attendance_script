@@ -5,11 +5,10 @@ import errno
 from openpyxl import load_workbook
 
 # Make sure the files starts with these strings in the same directory as this script.
-TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915" #should be .xlsx
-ATTENDANCE_NAMES_FILE = "bot_input" #any text file format
-OVERWRITE_MODE = (
-    True  # if false, will first reset the sheet's score to 0 before updating attendance
-)
+TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"  # should be .xlsx
+ATTENDANCE_NAMES_FILE = "bot_input"  # any text file format
+OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
+
 
 # These needs to be updated every week
 TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
@@ -21,6 +20,21 @@ def main():
     print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_list_path}!")
     bot_attendance_path = find_file_path(ATTENDANCE_NAMES_FILE)
     print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_attendance_path}!")
+
+    if not OVERWRITE_MODE:
+        print(
+            f"WARNING: You are about to perform an operation that will reset all existing scores in Sheet {TUTORIAL_NUMBER}."
+        )
+        user_input = input("Do you wish to continue (Y/n)?: ").strip().lower()
+
+        # Check if the user's input is 'y' or 'yes'
+        if user_input != "y":
+            print("Aborting...")
+            exit(0)
+        else:
+            print("Continuing...")
+    else:
+        print(f"Updating scores in Sheet {TUTORIAL_NUMBER} - (Tutorial {TUTORIAL_NUMBER})...")
 
     attendance = TakeAttendance(
         output_path=tut_list_path,
@@ -79,8 +93,12 @@ class TakeAttendance:
         """
         try:
             with open(self.input_path, "r") as file:
-                usernames = [line.rstrip() for line in file]
-                # TODO: parse only the #username from the line
+                usernames = [
+                    next(
+                        filter(lambda x: x.startswith("#"), line.split(",", 1))
+                    ).strip()
+                    for line in file
+                ]
             return usernames
         except Exception as e:
             print("ERROR >>> Unable to parse student attendance file!")
@@ -165,6 +183,8 @@ class TakeAttendance:
         Returns:
             List[StudentAttendance]: list of students from the tutorial list, updated with the students in attendance
         """
+        num_updated = 0
+
         for username in attendance:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
@@ -173,9 +193,12 @@ class TakeAttendance:
                 tutorial_dict[username] = StudentAttendance(
                     username=username, sid=tutorial_dict[username].sid, score=new_score
                 )
+                num_updated += 1
                 # print(f"Updated {username:<20} {'-':<5} Old:{old_score} | New:{new_score}")
             else:
                 print(f"WARNING >>> Username: {username} not found in tutorial list!")
+
+        print(f"Updated {num_updated} student(s)!")
 
         return list(tutorial_dict.values())
 
