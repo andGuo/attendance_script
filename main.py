@@ -202,6 +202,15 @@ class TakeAttendance:
 
 
 def find_file_path(file_str: str) -> str:
+    """
+    Find the file path of the first file in the script's directory that starts with file_str
+    
+    Args:
+        file_str (str): string for the file to find
+
+    Returns:
+        str: absolute path to the file
+    """
     current_directory = os.path.dirname(os.path.realpath(__file__))
 
     # Iterate over files in the script's directory
