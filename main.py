@@ -5,8 +5,8 @@ import errno
 from openpyxl import load_workbook
 
 # Make sure the files starts with these strings in the same directory as this script.
-TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"
-ATTENDANCE_NAMES_FILE = "bot_input"
+TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915" #should be .xlsx
+ATTENDANCE_NAMES_FILE = "bot_input" #any text file format
 OVERWRITE_MODE = (
     True  # if false, will first reset the sheet's score to 0 before updating attendance
 )
@@ -17,18 +17,14 @@ MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
 def main():
-    try:
-        tut_path = find_file_path(TUTORIAL_LIST_FILENAME)
-        print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_path}!")
-        bot_name_path = find_file_path(ATTENDANCE_NAMES_FILE)
-        print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_name_path}!")
-    except FileNotFoundError as e:
-        print(e)
-        return
+    tut_list_path = find_file_path(TUTORIAL_LIST_FILENAME)
+    print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_list_path}!")
+    bot_attendance_path = find_file_path(ATTENDANCE_NAMES_FILE)
+    print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_attendance_path}!")
 
     attendance = TakeAttendance(
-        output_path=tut_path,
-        input_path=bot_name_path,
+        output_path=tut_list_path,
+        input_path=bot_attendance_path,
         tutorial_number=TUTORIAL_NUMBER,
         overwrite_mode=OVERWRITE_MODE,
     )
@@ -48,11 +44,8 @@ def find_file_path(file_str: str) -> str:
     """
     current_directory = os.path.dirname(os.path.realpath(__file__))
 
-    # Iterate over files in the script's directory
     for filename in os.listdir(current_directory):
-        # Check if the filename starts with the constant string
         if filename.startswith(file_str):
-            # Print the first matching filename and exit the loop
             return os.path.join(current_directory, filename)
 
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_str)
