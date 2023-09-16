@@ -10,7 +10,7 @@ TUTORIAL_LIST_FILENAME = "B2D2"
 ATTENDANCE_NAMES_FILE = "bot_input"
 OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
 
-# These needs to be changed
+# These needs to be updated every week
 TUTORIAL_NUMBER = 1 # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
@@ -226,6 +226,8 @@ def main():
         tutorial_number=TUTORIAL_NUMBER,
         overwrite_mode=OVERWRITE_MODE,
     )
+
+    attendance.run()
 
 
 if __name__ == "__main__":
