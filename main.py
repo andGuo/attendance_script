@@ -6,7 +6,6 @@ from openpyxl import load_workbook
 
 # Make sure the files starts with these strings in the same directory as this script.
 TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"
-TUTORIAL_LIST_FILENAME = "B2D2"
 ATTENDANCE_NAMES_FILE = "bot_input"
 OVERWRITE_MODE = (
     True  # if false, will first reset the sheet's score to 0 before updating attendance
@@ -46,6 +45,7 @@ class TakeAttendance:
         try:
             with open(self.input_path, "r") as file:
                 usernames = [line.rstrip() for line in file]
+                # TODO: parse only the #username from the line
             return usernames
         except Exception as e:
             print("ERROR >>> Unable to parse student attendance file!")
@@ -204,7 +204,7 @@ class TakeAttendance:
 def find_file_path(file_str: str) -> str:
     """
     Find the file path of the first file in the script's directory that starts with file_str
-    
+
     Args:
         file_str (str): string for the file to find
 
