@@ -6,11 +6,12 @@ from openpyxl import load_workbook
 
 # These probably don't need to be changed
 TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"
+TUTORIAL_LIST_FILENAME = "B2D2"
 ATTENDANCE_NAMES_FILE = "bot_input"
 APPEND_MODE = True  # if false, will first reset every score to 0
 
 # These needs to be changed
-TUTORIAL_NUMBER = 2
+TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -30,7 +31,7 @@ class TakeAttendance:
     ) -> None:
         self.output_path: str = output_path
         self.input_path: str = input_path
-        self.tutorial_number: str = tutorial_number
+        self.tutorial_number: str = f"Tutorial {tutorial_number}"
         self.append_mode: bool = append_mode
 
     def _load_student_attendance(self) -> List[str]:
@@ -42,8 +43,8 @@ class TakeAttendance:
         """
         try:
             with open(self.input_path, "r") as file:
-                lines = file.readlines()
-            return lines
+                usernames = [line.rstrip() for line in file]
+            return usernames
         except Exception as e:
             print("ERROR >>> Unable to parse student attendance file!")
             raise Exception(e)
@@ -62,8 +63,8 @@ class TakeAttendance:
             worksheet = workbook[self.tutorial_number]
 
             # Determine which columns are sid, username, and score
-            for i in range(3):
-                col_str = worksheet.cell(0, i).value
+            for i in range(1, 4):
+                col_str = worksheet.cell(1, i).value
 
                 if col_str == "OrgDefinedId":
                     sid_col = i
@@ -83,7 +84,7 @@ class TakeAttendance:
                     num_rows += 1
 
             # Create dict
-            for row in range(1, num_rows + 1):
+            for row in range(2, num_rows + 1):
                 key = worksheet.cell(row, username_col).value
 
                 if key in tut_list_dict:
@@ -159,8 +160,8 @@ class TakeAttendance:
             worksheet = workbook[self.tutorial_number]
 
             # Determine which columns are sid, username, and score
-            for i in range(3):
-                col_str = worksheet.cell(0, i).value
+            for i in range(1, 4):
+                col_str = worksheet.cell(1, i).value
 
                 if col_str == "OrgDefinedId":
                     sid_col = i
@@ -172,7 +173,7 @@ class TakeAttendance:
                     raise Exception("Undefined column name")
 
             # Write to file
-            for row, student in enumerate(students, start=1):
+            for row, student in enumerate(students, start=2):
                 worksheet.cell(row, sid_col).value = student.sid
                 worksheet.cell(row, username_col).value = student.username
                 worksheet.cell(row, score_col).value = student.score
@@ -204,7 +205,6 @@ def find_file_path(file_str: str) -> str:
         # Check if the filename starts with the constant string
         if filename.startswith(file_str):
             # Print the first matching filename and exit the loop
-            print(f"Found file: {filename}!")
             return os.path.join(current_directory, filename)
 
     raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), file_str)
@@ -213,7 +213,9 @@ def find_file_path(file_str: str) -> str:
 def main():
     try:
         tut_path = find_file_path(TUTORIAL_LIST_FILENAME)
+        print(f"Found file: {TUTORIAL_LIST_FILENAME} at {tut_path}!")
         bot_name_path = find_file_path(ATTENDANCE_NAMES_FILE)
+        print(f"Found file: {ATTENDANCE_NAMES_FILE} at {bot_name_path}!")
     except FileNotFoundError as e:
         print(e)
         return
@@ -224,6 +226,8 @@ def main():
         tutorial_number=TUTORIAL_NUMBER,
         append_mode=APPEND_MODE,
     )
+
+    attendance._load_tutorial_list()
 
 
 if __name__ == "__main__":
