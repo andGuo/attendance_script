@@ -19,7 +19,7 @@ MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 class StudentAttendance(NamedTuple):
     username: str
     sid: int
-    score: int
+    score: int | float
 
 
 class TakeAttendance:
@@ -91,15 +91,18 @@ class TakeAttendance:
 
                 if key in tut_list_dict:
                     raise Exception("Duplicate username found")
+                
+                curr_score = worksheet.cell(row, score_col).value
 
                 if (
                     self.overwrite_mode
-                    and worksheet.cell(row, score_col).value is not None
+                    and curr_score is not None
+                    and curr_score > 0
                 ):
                     value = StudentAttendance(
                         username=key,
                         sid=worksheet.cell(row, sid_col).value,
-                        score=worksheet.cell(row, score_col).value,
+                        score=curr_score if curr_score <= MAX_SCORE else MAX_SCORE,
                     )
                 else:
                     value = StudentAttendance(
@@ -198,7 +201,7 @@ class TakeAttendance:
         print(f"Found {len(attendance_dict)} students from {self.output_path}")
         new_attendance = self._update_attendance(student_attendance, attendance_dict)
         num = self._write_tutorial_list(new_attendance)
-        print(f"Succesfully wrote {num} students to {self.output_path}!")
+        print(f"Successfully wrote {num} students to {self.output_path}!")
 
 
 def find_file_path(file_str: str) -> str:
