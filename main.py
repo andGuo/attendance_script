@@ -4,14 +4,14 @@ import os
 import errno
 from openpyxl import load_workbook
 
-# These probably don't need to be changed
+# Make sure the files starts with these strings in the same directory as this script.
 TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"
 TUTORIAL_LIST_FILENAME = "B2D2"
 ATTENDANCE_NAMES_FILE = "bot_input"
-APPEND_MODE = True  # if false, will first reset every score to 0
+OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
 
 # These needs to be changed
-TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
+TUTORIAL_NUMBER = 1 # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -27,12 +27,12 @@ class TakeAttendance:
         output_path: str,
         input_path: str,
         tutorial_number: int,
-        append_mode: bool = True,
+        overwrite_mode: bool = True,
     ) -> None:
         self.output_path: str = output_path
         self.input_path: str = input_path
         self.tutorial_number: str = f"Tutorial {tutorial_number}"
-        self.append_mode: bool = append_mode
+        self.overwrite_mode: bool = overwrite_mode
 
     def _load_student_attendance(self) -> List[str]:
         """
@@ -91,7 +91,7 @@ class TakeAttendance:
                     raise Exception("Duplicate username found")
 
                 if (
-                    self.append_mode
+                    self.overwrite_mode
                     and worksheet.cell(row, score_col).value is not None
                 ):
                     value = StudentAttendance(
@@ -137,9 +137,9 @@ class TakeAttendance:
                 tutorial_dict[username] = StudentAttendance(
                     username=username, sid=tutorial_dict[username].sid, score=new_score
                 )
-                print(f"Updated {username} to {new_score}!")
+                # print(f"Updated {username:<20} {'-':<5} Old:{old_score} | New:{new_score}")
             else:
-                print(f"WARNING >>> {username} not found in tutorial list!")
+                print(f"WARNING >>> Username: {username} not found in tutorial list!")
 
         return list(tutorial_dict.values())
 
@@ -224,10 +224,8 @@ def main():
         output_path=tut_path,
         input_path=bot_name_path,
         tutorial_number=TUTORIAL_NUMBER,
-        append_mode=APPEND_MODE,
+        overwrite_mode=OVERWRITE_MODE,
     )
-
-    attendance._load_tutorial_list()
 
 
 if __name__ == "__main__":
