@@ -4,7 +4,7 @@
 
 ## Description
 
-A python program to input grades and feedback. Works on MacOS with Chrome.
+A python program to record student attendance based on helpful Discord bot output. Tested on MacOS Ventura.
 
 ### Dependencies
 
@@ -13,10 +13,12 @@ Most of these can be installed with pip (Python3):
 - openpyxl
 - Excel (Native Installation)
 
-### Start-Up
+### How-to-use
 
-∂∂∂Note:
-
-- On MacOS, Excel will ask for you to grant permission to access each file. This has to be manually accepted each time afaik.
-  - https://stackoverflow.com/questions/39604876/using-xlwings-to-open-an-excel-file-on-mac-os-x-el-capitan-requires-grant-access
-  - Perhaps placing all the files in the same directory as main.py is a work around
+1. Download Excel to your OS.
+2. Copy and paste the bot output from discord. Ensure it is newline delimited.
+3. Download the merged tutorial attendance sheet as an `.xlsx` file.
+   1. This file is used as both read and write (i.e. will be overwritten).
+4. Double-check constants at the top of file in `main.py.`
+5. Run it.
+6. Upload or copy-paste the updated sheet.
