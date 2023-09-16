@@ -8,10 +8,12 @@ from openpyxl import load_workbook
 TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"
 TUTORIAL_LIST_FILENAME = "B2D2"
 ATTENDANCE_NAMES_FILE = "bot_input"
-OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
+OVERWRITE_MODE = (
+    True  # if false, will first reset the sheet's score to 0 before updating attendance
+)
 
 # These needs to be updated every week
-TUTORIAL_NUMBER = 1 # the tutorial number (int) to update
+TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -176,7 +178,9 @@ class TakeAttendance:
             for row, student in enumerate(students, start=2):
                 worksheet.cell(row, sid_col).value = student.sid
                 worksheet.cell(row, username_col).value = student.username
-                worksheet.cell(row, score_col).value = student.score
+                worksheet.cell(row, score_col).value = (
+                    student.score if student.score > 0 else None
+                )
 
             workbook.save(filename=self.output_path)
             workbook.close()
