@@ -15,7 +15,7 @@ Most of these can be installed with pip (Python3):
 
 ### How-to-use
 
-1. Download Excel to your OS.
+1. (Optional) Download Excel to your OS.
 2. Copy and paste the bot output from discord. Ensure it is newline delimited.
 3. Download the merged tutorial attendance sheet as an `.xlsx` file.
    1. This file is used as both read and write (i.e. will be overwritten).

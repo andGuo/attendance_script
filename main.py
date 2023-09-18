@@ -11,7 +11,7 @@ OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 befor
 
 
 # These needs to be updated every week
-TUTORIAL_NUMBER = 2  # the tutorial number (int) to update
+TUTORIAL_NUMBER = 2  # the tutorial number for the week (int)
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -67,7 +67,7 @@ def find_file_path(file_str: str) -> str:
 
 class StudentAttendance(NamedTuple):
     username: str
-    sid: int
+    sid: str
     score: int | float
 
 
