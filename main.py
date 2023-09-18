@@ -11,7 +11,7 @@ OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 befor
 
 
 # These needs to be updated every week
-TUTORIAL_NUMBER = 1  # the tutorial number (int) to update
+TUTORIAL_NUMBER = 2  # the tutorial number (int) to update
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -184,11 +184,17 @@ class TakeAttendance:
             List[StudentAttendance]: list of students from the tutorial list, updated with the students in attendance
         """
         num_updated = 0
+        num_new = 0
 
         for username in attendance:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
-                new_score = 1 if old_score <= 0 else min(old_score, MAX_SCORE)
+                
+                if old_score <= 0:
+                    new_score = 1 
+                    num_new += 1
+                else:
+                    new_score = min(old_score, MAX_SCORE)
 
                 tutorial_dict[username] = StudentAttendance(
                     username=username, sid=tutorial_dict[username].sid, score=new_score
@@ -198,7 +204,7 @@ class TakeAttendance:
             else:
                 print(f"WARNING >>> Username: {username} not found in tutorial list!")
 
-        print(f"Updated {num_updated} student(s)!")
+        print(f"Updated {num_new}/{num_updated} student(s) with new score!")
 
         return list(tutorial_dict.values())
 
