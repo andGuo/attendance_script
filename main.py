@@ -186,7 +186,9 @@ class TakeAttendance:
         num_updated = 0
         num_new = 0
 
-        for username in attendance:
+        username_set = set(attendance)
+
+        for username in username_set:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
                 
