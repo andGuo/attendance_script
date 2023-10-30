@@ -185,6 +185,7 @@ class TakeAttendance:
         """
         num_updated = 0
         num_new = 0
+        num_full_marks = 0
 
         # username_set = set(usernames)
 
@@ -197,7 +198,7 @@ class TakeAttendance:
                     num_new += 1
                 elif old_score == 1:
                     new_score = 2
-                    num_new += 1
+                    num_full_marks += 1 if new_score == MAX_SCORE else 0
                 else:
                     new_score = min(old_score, MAX_SCORE)
 
@@ -209,7 +210,7 @@ class TakeAttendance:
             else:
                 print(f"WARNING >>> Username: {username} not found in tutorial list!")
 
-        print(f"Updated {num_new}/{num_updated} student(s) with new score!")
+        print(f"Updated {num_new}/{num_updated} student(s) with new score! ({num_full_marks} full marks)")
 
         return list(tutorial_dict.values())
 
