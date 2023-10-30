@@ -5,13 +5,13 @@ import errno
 from openpyxl import load_workbook
 
 # Make sure the files starts with these strings in the same directory as this script.
-TUTORIAL_LIST_FILENAME = "tutorials_merged_20230915"  # should be .xlsx
+TUTORIAL_LIST_FILENAME = "tutorials_merged_20230928"  # should be .xlsx
 ATTENDANCE_NAMES_FILE = "bot_input"  # any text file format
 OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
 
 
 # These needs to be updated every week
-TUTORIAL_NUMBER = 2  # the tutorial number for the week (int)
+TUTORIAL_NUMBER = 6  # the tutorial number for the week (int)
 MAX_SCORE = 2  # maximum score (int) a student can get for the tutorial
 
 
@@ -171,13 +171,13 @@ class TakeAttendance:
             raise Exception(e)
 
     def _update_attendance(
-        self, attendance: List[str], tutorial_dict: Dict[str, StudentAttendance]
+        self, usernames: List[str], tutorial_dict: Dict[str, StudentAttendance]
     ) -> List[StudentAttendance]:
         """
         Update the attendance of the students in tutorial_dict with the students in attendance
 
         Args:
-            attendance (List[str]): list of students from the bot's attendance
+            usernames (List[str]): list of students from the bot's attendance
             tutorial_dict (Dict[str, StudentAttendance]): dictionary of students from the tutorial list
 
         Returns:
@@ -186,14 +186,17 @@ class TakeAttendance:
         num_updated = 0
         num_new = 0
 
-        username_set = set(attendance)
+        # username_set = set(usernames)
 
-        for username in username_set:
+        for username in usernames:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
                 
                 if old_score <= 0:
                     new_score = 1 
+                    num_new += 1
+                elif old_score == 1:
+                    new_score = 2
                     num_new += 1
                 else:
                     new_score = min(old_score, MAX_SCORE)
