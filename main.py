@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 # Make sure the files starts with these strings in the same directory as this script.
 TUTORIAL_LIST_FILENAME = "tutorials_merged_20230928"  # should be .xlsx
 ATTENDANCE_NAMES_FILE = "bot_input"  # any text file format
-OVERWRITE_MODE = True  # if false, will first reset the sheet's score to 0 before updating attendance
+OVERWRITE_MODE = False  # if false, will first reset the sheet's score to 0 before updating attendance
 
 
 # These needs to be updated every week
