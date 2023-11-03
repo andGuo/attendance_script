@@ -183,34 +183,37 @@ class TakeAttendance:
         Returns:
             List[StudentAttendance]: list of students from the tutorial list, updated with the students in attendance
         """
-        num_updated = 0
-        num_new = 0
-        num_full_marks = 0
 
-        # username_set = set(usernames)
+        username_set = set(usernames)
+
+        attendance_marks = {
+            username: usernames.count(username) for username in username_set
+        }
 
         for username in usernames:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
-                
-                if old_score <= 0:
-                    new_score = 1 
-                    num_new += 1
-                elif old_score == 1:
-                    new_score = 2
-                    num_full_marks += 1 if new_score == MAX_SCORE else 0
-                else:
-                    new_score = min(old_score, MAX_SCORE)
+
+                if attendance_marks[username] > 2:
+                    raise Exception(
+                        f"Invalid student attendance with username: {username}"
+                    )
+
+                # only use attendance score if the student does not have the max score (i.e. been checked off)
+                new_score = (
+                    attendance_marks[username]
+                    if old_score < MAX_SCORE
+                    else MAX_SCORE
+                )
 
                 tutorial_dict[username] = StudentAttendance(
                     username=username, sid=tutorial_dict[username].sid, score=new_score
                 )
-                num_updated += 1
-                # print(f"Updated {username:<20} {'-':<5} Old:{old_score} | New:{new_score}")
+                print(
+                    f"Updated {username:<25} {'-':<2} Old: {old_score} | New: {new_score}"
+                )
             else:
                 print(f"WARNING >>> Username: {username} not found in tutorial list!")
-
-        print(f"Updated {num_new}/{num_updated} student(s) with new score! ({num_full_marks} full marks)")
 
         return list(tutorial_dict.values())
 
