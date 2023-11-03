@@ -190,13 +190,13 @@ class TakeAttendance:
             username: usernames.count(username) for username in username_set
         }
 
-        for username in usernames:
+        for username in username_set:
             if username in tutorial_dict:
                 old_score = tutorial_dict[username].score
 
                 if attendance_marks[username] > 2:
                     raise Exception(
-                        f"Invalid student attendance with username: {username}"
+                        f"Invalid student attendance with username: {username} (count: {attendance_marks[username]})"
                     )
 
                 # only use attendance score if the student does not have the max score (i.e. been checked off)
