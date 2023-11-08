@@ -1,5 +1,8 @@
 .env
 .DS_Store
+.python-version
 *.xlsx
 *.csv
 *.txt
+build/
+Attendance_Script*/
